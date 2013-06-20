@@ -14,9 +14,9 @@ public class FuelHandlerBituminousProduct implements IFuelHandler {
 	
 	@Override
 	public int getBurnTime(ItemStack fuel) {
-		if (fuel.itemID == PetroleumGenerator.bituminousSludgeItem.shiftedIndex) {
+		if (fuel.itemID == PetroleumGenerator.itemBituminousSludge.itemID) {
 			return sludge_burn_time;
-		} else if (fuel.itemID == PetroleumGenerator.bituminousSludgeBucketItem.shiftedIndex) {
+		} else if (fuel.itemID == PetroleumGenerator.itemBituminousSludgeBucket.itemID) {
 			return sludge_burn_time * 5;
 		} else {
 			return 0;

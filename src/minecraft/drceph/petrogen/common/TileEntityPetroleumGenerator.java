@@ -474,6 +474,18 @@ public class TileEntityPetroleumGenerator extends TileEntity implements
 	public void updateRedstoneStatus() {
 		hasRedstonePower = worldObj.isBlockIndirectlyGettingPowered(xCoord, yCoord, zCoord);
 	}
+
+	@Override
+	public boolean isInvNameLocalized() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean isStackValidForSlot(int i, ItemStack itemstack) {
+		// TODO Auto-generated method stub
+		return false;
+	}
 	
 	
 

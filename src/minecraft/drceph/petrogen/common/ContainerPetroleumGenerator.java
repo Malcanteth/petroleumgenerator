@@ -89,9 +89,9 @@ public class ContainerPetroleumGenerator extends Container {
 	}
 
 	@Override
-	public void updateCraftingResults() {
+	public void detectAndSendChanges() {
 		// TODO Auto-generated method stub
-		super.updateCraftingResults();
+		super.detectAndSendChanges();
 		for (int i = 0; i < this.crafters.size(); i++) {
 			ICrafting crafter = (ICrafting)this.crafters.get(i);
 			if (this.lastAmount != this.tileEntity.amount) {

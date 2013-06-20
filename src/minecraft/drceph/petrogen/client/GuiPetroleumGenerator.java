@@ -55,9 +55,8 @@ public class GuiPetroleumGenerator extends GuiContainer {
 
 	@Override
 	protected void drawGuiContainerBackgroundLayer(float f, int i, int j) {
-        int k = mc.renderEngine.getTexture("/drceph/petrogen/sprites/gui.png");
         GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-        mc.renderEngine.bindTexture(k);
+        mc.renderEngine.bindTexture("/mods/petrogen/textures/gui/GUIPetroleumGenerator.png");
         int x = (width - xSize) / 2;
         int y = (height - ySize) / 2;
         drawTexturedModalRect(x, y, 0, 0, xSize, ySize);

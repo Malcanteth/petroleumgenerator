@@ -30,8 +30,15 @@ import java.util.Arrays;
 import java.util.Map;
 import java.util.Random;
 
+import advsolar.ASPClientProxy;
+
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
+
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.Material;
+import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
@@ -39,23 +46,92 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.Icon;
 import net.minecraft.util.MathHelper;
+import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.liquids.LiquidDictionary;
 import net.minecraftforge.liquids.LiquidStack;
 
 public class BlockPetroleumGenerator extends BlockContainer {
 
-	public BlockPetroleumGenerator(int id, int texture) {
-		super(id, texture, Material.iron);
-		this.setRequiresSelfNotify();
+	private Icon[] iconBuffer;
+	
+	public BlockPetroleumGenerator(int id) {
+		super(id, Material.iron);
+		this.setHardness(2.0f);
+		this.setStepSound(Block.soundMetalFootstep);
+		MinecraftForge.setBlockHarvestLevel(this, "pickaxe", 0);
+		//this.setRequiresSelfNotify();
 		this.setCreativeTab(CreativeTabs.tabRedstone);
 	}
 
-	@Override
-	public String getTextureFile() {
-		return "/drceph/petrogen/sprites/blocks.png";
-	}
+    @Override
+    @SideOnly(Side.CLIENT)
+    public void registerIcons(IconRegister par1IconRegister) {
+    	iconBuffer = new Icon[4];
+    	iconBuffer[0] = par1IconRegister.registerIcon("petrogen:pg_a_front");
+        iconBuffer[1] = par1IconRegister.registerIcon("petrogen:pg_side");
+        iconBuffer[2] = par1IconRegister.registerIcon("petrogen:pg_top");
+        iconBuffer[3] = par1IconRegister.registerIcon("petrogen:pg_d_front");
+ 	}
+    
+    @Override
+    public String getUnlocalizedName() {
+        return "blockPetroleumGenerator";
+    }
+    
+    @Override
+    public Icon getIcon(int blockSide, int blockMeta) {
+    	switch (blockMeta) {
+		
+		case 1:
+			switch (blockSide) {
+			case 0:
+			case 1:
+				return iconBuffer[2];
+			case 2:
+			case 3:
+				return iconBuffer[0];
+			default:
+				return iconBuffer[1];
+			}
+		case 2:
+			switch (blockSide) {
+			case 0:
+			case 1:
+				return iconBuffer[1];
+			case 2:
+			case 3:
+				return iconBuffer[1];
+			default:
+				return iconBuffer[3];
+			}
+		case 3:
+			switch (blockSide) {
+			case 0:
+			case 1:
+				return iconBuffer[1];
+			case 2:
+			case 3:
+				return iconBuffer[1];
+			default:
+				return iconBuffer[0];
+			}
+		default:
+			switch (blockSide) {
+			case 0:
+			case 1:
+				return iconBuffer[2];
+			case 2:
+			case 3:
+				return iconBuffer[3];
+			default:
+				return iconBuffer[1];
+			}	
+		}
+    }    
 
 	public boolean onBlockActivated(World world, int x, int y, int z,
 			EntityPlayer player, int i, float f, float g, float t) {
@@ -86,78 +162,23 @@ public class BlockPetroleumGenerator extends BlockContainer {
 		return te;
 	}
 
-	@Override
-	public TileEntity createNewTileEntity(World world, int metadata) {
-		return this.createNewTileEntity(world);
-	}
-	
 	public static void updateBlockState(boolean active, World world, int x, int y, int z) {
 		int currentMetadata = world.getBlockMetadata(x, y, z);
 		int newMetadata = active ? 1 : 0;
 		if (currentMetadata > 1) newMetadata += 2;
-		world.setBlockMetadataWithNotify(x,y,z,newMetadata);
+		world.setBlockMetadataWithNotify(x,y,z,newMetadata,3);
 	}
 	
 	@Override
-	public int getBlockTextureFromSideAndMetadata(int par1, int par2) {
-		switch (par2) {
-			
-			case 1:
-				switch (par1) {
-				case 0:
-				case 1:
-					return 2;
-				case 2:
-				case 3:
-					return 0;
-				default:
-					return 1;
-				}
-			case 2:
-				switch (par1) {
-				case 0:
-				case 1:
-					return 1;
-				case 2:
-				case 3:
-					return 1;
-				default:
-					return 3;
-				}
-			case 3:
-				switch (par1) {
-				case 0:
-				case 1:
-					return 1;
-				case 2:
-				case 3:
-					return 1;
-				default:
-					return 0;
-				}
-			default:
-				return getBlockTextureFromSide(par1);	
-			}
+    public Icon getBlockTexture(IBlockAccess world, int x, int y, int z, int blockSide) {
+		int blockMeta = world.getBlockMetadata(x, y, z);
+		return getIcon(blockSide, blockMeta);
 	}
 
 	@Override
-	public int getBlockTextureFromSide(int par1) {
-		switch (par1) {
-		case 0:
-		case 1:
-			return 2;
-		case 2:
-		case 3:
-			return 3;
-		default:
-			return 1;
-		}
-	}
-	
-	@Override
-	public void onBlockPlacedBy(World world, int x, int y, int z, net.minecraft.entity.EntityLiving player) {
+	public void onBlockPlacedBy(World world, int x, int y, int z, net.minecraft.entity.EntityLiving player, ItemStack itemstack) {
 		
-		//from 0 to 3, inclusive	
+		//from 0 to 3, inclusive
 		int facing = MathHelper.floor_double((double)(player.rotationYaw * 4.0F / 360.0F) + 0.5D) & 3;
 		PetroleumGenerator.log.info("Function gave: "+facing);
 		int currentMetadata = world.getBlockMetadata(x, y, z);
@@ -165,10 +186,10 @@ public class BlockPetroleumGenerator extends BlockContainer {
 		switch (facing) {
 		case 1:
 		case 3:
-			world.setBlockMetadataWithNotify(x,y,z,currentMetadata+2);
+			world.setBlockMetadataWithNotify(x,y,z,currentMetadata+2,3);
 			break;
 		default:
-			world.setBlockMetadataWithNotify(x,y,z,currentMetadata);
+			world.setBlockMetadataWithNotify(x,y,z,currentMetadata,3);
 		}
 		
 	};
@@ -179,7 +200,7 @@ public class BlockPetroleumGenerator extends BlockContainer {
             super.breakBlock(world, x, y, z, par5, par6);
     }
     
-    private void dropItems(World world, int x, int y, int z){
+    private void dropItems(World world, int x, int y, int z) {
             Random rand = new Random();
 
             TileEntity tileEntity = world.getBlockTileEntity(x, y, z);

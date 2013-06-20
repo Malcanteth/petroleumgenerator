@@ -36,12 +36,6 @@ import drceph.petrogen.common.TileEntityPetroleumGenerator;
 public class ClientProxy extends CommonProxy {
 
 	@Override
-	public void registerRenderThings() {
-		MinecraftForgeClient.preloadTexture("/drceph/petrogen/sprites/blocks.png");
-		MinecraftForgeClient.preloadTexture(ITEM_TEXTURE);
-	}
-	
-	@Override
 	public Object getClientGuiElement(int ID, EntityPlayer player, World world, int X, int Y, int Z) {
 		TileEntity te=world.getBlockTileEntity(X, Y, Z);
 		if (te!=null && te instanceof TileEntityPetroleumGenerator) {
