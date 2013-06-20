@@ -26,9 +26,15 @@
 
 package drceph.petrogen.client;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.inventory.IInventory;
+import net.minecraft.item.ItemStack;
+import net.minecraftforge.liquids.LiquidStack;
 
 import org.lwjgl.opengl.GL11;
 
@@ -49,8 +55,28 @@ public class GuiPetroleumGenerator extends GuiContainer {
         this.drawCenteredString(fontRenderer, "Petroleum Generator", this.xSize/2, 4, 0x404040);
         //System.out.println(container==null?"null":container.toString());
         //todo: makes a new container object each click, need to get the info from the tileentity??
-        //fontRenderer.drawString("V:" +tileEntity.charge, 8, (ySize - 96) + 2, 0x404040);
+
+        int x = p1 - (width - xSize) / 2;
+        int y = p2 - (height - ySize) / 2;
         
+        //Fuel tooltip
+        if ( x >= 50 && x <= 66 && y >= 14 && y <= 72 ){
+         	if (FuelPetroleumGenerator.isValidFuel(tileEntity.getCurrentLiquidId())) {
+        		LiquidStack fuel = tileEntity.getLiquidStack();
+        		String s = new ItemStack(fuel.itemID, 1, fuel.itemMeta).getDisplayName();
+        		//not sure what is more useful, liquid name or amount
+        		//s = Integer.toString(fuel.amount) + " / " + Integer.toString(tileEntity.MAX_VOLUME) + " mB";
+        		this.drawCreativeTabHoveringText(s, x, y);
+        	}
+         	else {
+         		this.drawCreativeTabHoveringText("Empty", x, y);
+         	}
+        }
+        
+        //Energy tooltip        
+        if ( x >= 113 && x <= 137 && y >= 35 && y <= 52 ) {
+        	this.drawCreativeTabHoveringText(tileEntity.charge + " / " + tileEntity.MAX_CHARGE +" EU", x, y);
+        }
 	}
 
 	@Override
